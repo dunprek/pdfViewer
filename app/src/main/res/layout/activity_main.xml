@@ -6,8 +6,5 @@
     android:layout_height="match_parent"
     tools:context="don.com.pdf.MainActivity">
 
-    <es.voghdev.pdfviewpager.library.PDFViewPager
-        android:id="@+id/pdfViewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
 </LinearLayout>

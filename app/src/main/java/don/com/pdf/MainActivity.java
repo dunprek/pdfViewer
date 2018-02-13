@@ -1,30 +1,24 @@
 package don.com.pdf;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
+
+
+import com.itextpdf.text.pdf.PdfReader;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import es.voghdev.pdfviewpager.library.PDFViewPager;
-import es.voghdev.pdfviewpager.library.adapter.PDFPagerAdapter;
-import es.voghdev.pdfviewpager.library.asset.CopyAsset;
-import es.voghdev.pdfviewpager.library.asset.CopyAssetThreadImpl;
-
 public class MainActivity extends AppCompatActivity {
 
-    PDFViewPager pdfViewPager;
 
     private String TAG = MainActivity.class.getSimpleName();
 
@@ -36,23 +30,49 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
+    File file;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        checkPermission();
+
+        if (checkPermission()){
+
+            PdfReader reader = null;
+            try {
+                reader = new PdfReader( getPDFPathonSDCard());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            int aa = reader.getNumberOfPages();
+
+            Log.d(TAG+"TOTALPAGE",String.valueOf(aa));
+
+
+
+
+        /*    try {
+                pdfDocument = PDDocument.load(new File(getPDFPathonSDCard()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, String.valueOf(pdfDocument.getNumberOfPages()));*/
+        }
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((PDFPagerAdapter) pdfViewPager.getAdapter()).close();
+
     }
 
     protected String getPDFPathonSDCard() {
-        File file = new File(getExternalFilesDir("pdf"), "Proposal.pdf");
 
-        Log.d(TAG, file.getAbsolutePath());
+         file = new File(getExternalFilesDir("pdf"), "tester.pdf");
+        Log.d(TAG + "PDF", file.getAbsolutePath());
         return file.getAbsolutePath();
     }
 
@@ -78,9 +98,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case MULTIPLE_PERMISSIONS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    CopyAsset copyAsset = new CopyAssetThreadImpl(MainActivity.this, new Handler());
-                    copyAsset.copy(getPDFPathonSDCard(), new File(getCacheDir(), "Proposal.pdf").getAbsolutePath());
-
+                    getPDFPathonSDCard();
                 } else {
                     finish();
                 }
